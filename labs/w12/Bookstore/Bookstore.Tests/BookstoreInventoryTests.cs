@@ -15,7 +15,7 @@ public class BookstoreInventoryTests
     }
 
     [TestMethod]
-    public void Test1()
+    public void AddBookTest1()
     {
         //Implement tests
         Assert.IsTrue(true);
