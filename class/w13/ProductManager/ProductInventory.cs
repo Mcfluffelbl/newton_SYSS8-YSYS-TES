@@ -4,42 +4,23 @@ using System.Collections.Generic;
 
 namespace ProductManager
 {
+    // ProductInventory provides access to product data.
     public class ProductInventory
     {
-        private readonly string _connectionString;
+        // Repository interface used to access product data.
+        private readonly IProductRepository _repo;
 
-        public ProductInventory(string connectionString)
+        // Constructor that accepts a repository implementation.
+        // This enables dependency injection, making unit tests possible without a database.
+        public ProductInventory(IProductRepository repo)
         {
-            _connectionString = connectionString;
+            _repo = repo;
         }
 
+        // Gets all products in a specific category.
         public List<Product> GetProductsByCategory(string category)
         {
-            var products = new List<Product>();
-
-            using var conn = new NpgsqlConnection(_connectionString);
-            conn.Open();
-
-            var cmd = new NpgsqlCommand(
-                "SELECT name, category, price FROM products WHERE category = @category",
-                conn
-            );
-
-            cmd.Parameters.AddWithValue("category", category);
-
-            using var reader = cmd.ExecuteReader();
-
-            while (reader.Read())
-            {
-                products.Add(new Product
-                {
-                    Name = reader.GetString(0),
-                    Category = reader.GetString(1),
-                    Price = reader.GetString(2)
-                });
-            }
-
-            return products;
+            return _repo.GetByCategory(category);
         }
     }
 }
